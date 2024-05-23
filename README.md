@@ -16,7 +16,7 @@ Fill the gap in the Elixir ecosystem for a good semantic text chunker, and give 
 ## Key Features
 
 - Semantic Chunking: Prioritizes chunking text into meaningful blocks based on separators relevant to the specified format (e.g., headings, paragraphs in Markdown).
-- Configurable Chunking: Fine-tune the chunking process with options for, text chunk size, overlap and format.
+- Configurable Chunking: Fine-tune the chunking process with options for, chunk length method (String.length/1 by default), text chunk size, overlap and format.
 - Metadata Tracking: Automatically generates Chunk structs containing byte range information for accurately reassembling the original text if needed.
 - Extensibility: Designed to accommodate additional chunking strategies in the future.
 
@@ -48,7 +48,7 @@ text = "Your text to be split..."
 chunks = TextChunker.split(text)
 ```
 
-This will chunk up your text using the default parameters - a chunk size of `1000`, chunk overlap of `200`, format of `:plaintext` and using the `RecursiveChunk` strategy.
+This will chunk up your text using the default parameters - a length method of `String.length/1`, a chunk size of `1000`, chunk overlap of `200`, format of `:plaintext` and using the `RecursiveChunk` strategy.
 
 The split method returns `Chunks` of your text. These chunks include the start and end bytes of each chunk.
 
@@ -64,6 +64,7 @@ The split method returns `Chunks` of your text. These chunks include the start a
 
 If you wish to adjust these parameters, configuration can optionally be passed via a keyword list. 
 
+  - `length_function` - the length method used to compare the actual chunk size with the max `chunk_size`.  Must be a function: `(String.t() -> pos_integer())`
   - `chunk_size` -  The approximate target chunk size, as measured per code points. This means that both `a` and `👻` count as one. Chunks will not exceed this maximum, but may sometimes be smaller. **Important note** This means that graphemes *may* be split. For example, `👩‍🚒` may be split into `👩,🚒` or not depending on the split boundary.
   - `chunk_overlap` - The contextual overlap between chunks, as measured per code point. Overlap is *not* guaranteed; again this should be treated as a maximum. The size of an individual overlap will depend on the semantics of the text being split.
   - `format` - What informs separator selection. Because we are trying to preserve meaning between the chunks, the format of the text we are splitting is important. It's important to split newlines in plain text; it's important to split `###` headings in markdown.

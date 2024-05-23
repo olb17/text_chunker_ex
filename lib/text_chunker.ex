@@ -39,6 +39,7 @@ defmodule TextChunker do
   ]
 
   @opts_schema [
+    length_function: [required: true],
     strategy: [required: true, type: {:in, @supported_strategies}],
     chunk_overlap: [required: true, type: :non_neg_integer],
     chunk_size: [required: true, type: :pos_integer],
@@ -49,6 +50,7 @@ defmodule TextChunker do
   ]
 
   @default_opts [
+    length_function: &String.length/1,
     chunk_size: 2000,
     chunk_overlap: 200,
     strategy: RecursiveChunk,
